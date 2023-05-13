@@ -12,6 +12,7 @@ class UserController {
     static signIn = async (req, res, next) => {
         try {
             console.log("[USER] LOGIN:: ", req.body);
+            return res.status(200).json(await UserService.signIn(req.body))
         } catch (error) {
             next(error);
         }

@@ -37,6 +37,29 @@ class UserService {
             console.error(error);
         }
     }
+    static signIn = async({email, password}) => {
+        try {
+            const user = await User.findOne({ email }).select("-__v -updatedAt -createdAt");
+            if (!user) {
+                return res.status(400).json({ error: 'Invalid email or password' });
+            }
+
+            const validPassword = await bcrypt.compare(password, user.password);
+            if (!validPassword) {
+                return res.status(400).json({ error: 'Invalid email or password' });
+            }
+            const accessToken = user.generateAccessToken();
+            const refreshToken = user.generateRefreshToken();
+            return {
+                code: 200,
+                metadata: user,
+                accessToken,
+                refreshToken
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
 
 module.exports = UserService
